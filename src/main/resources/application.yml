@@ -1,21 +1,14 @@
-#AUTH
-app:
-  auth:
-    jwtExpirationMs: 604800000
-    redirectUrl: ${FRONT_URL:}/auth/login
 spring:
   security:
     oauth2:
-      client:
-        registration:
-          github:
-            scope:
-              - user:email
-              - read:user
-          google:
-            scope:
-              - email
-              - profile
+      resourceserver:
+        jwt:
+          issuer-uri: ${IDP_ISSUER}
+  jpa:
+    properties:
+      hibernate:
+        id:
+          db_structure_naming_strategy: legacy
 
 #SWAGGER
 springdoc:
@@ -24,8 +17,17 @@ springdoc:
   swagger-ui:
     path: /swagger/swagger-ui.html
 
+# Actuator
+management:
+  server:
+    port: 8083
+  endpoints:
+    web:
+      exposure:
+        include: info,health
+
 #MONITORING
 sentry:
   exception-resolver-order: 0
-  release: ${HEROKU_BUILD_COMMIT:0.0.0}
+  release: ${VERSION:0.0.0}
   traces-sample-rate: 1.0

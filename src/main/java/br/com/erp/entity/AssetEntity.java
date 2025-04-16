@@ -6,14 +6,14 @@ import br.com.erp.bean.asset.AssetRendaFixaType;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Data
 @Builder

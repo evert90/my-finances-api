@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
-import static javax.persistence.GenerationType.TABLE;
+import static jakarta.persistence.GenerationType.TABLE;
 
 @Data
 @NoArgsConstructor

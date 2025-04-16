@@ -1,6 +1,6 @@
 plugins {
-	id 'org.springframework.boot' version '2.7.3'
-	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
+	id 'org.springframework.boot' version '3.4.4'
+	id 'io.spring.dependency-management' version '1.1.7'
 	id 'java'
 	id 'jacoco'
 	id 'info.solidsoft.pitest' version '1.7.4'
@@ -18,12 +18,17 @@ task unzipNewrelic(type: Copy) {
 	into rootDir
 }
 
-group = 'br.com.erp'
-version = System.getenv("HEROKU_BUILD_COMMIT") ?: "0.0.0"
-sourceCompatibility = JavaVersion.VERSION_17
+group = 'br.dev.projects'
+version = '0.0.1-SNAPSHOT'
 
 jar {
 	enabled = false
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 configurations {
@@ -37,25 +42,23 @@ repositories {
 }
 
 ext {
-	set('springCloudVersion', "2021.0.4")
+	set('springCloudVersion', "2024.0.1")
 }
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
-	runtimeOnly 'mysql:mysql-connector-java'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
 	runtimeOnly 'org.postgresql:postgresql'
 	implementation 'org.flywaydb:flyway-core'
-	implementation "org.flywaydb:flyway-mysql"
-	implementation 'org.hibernate:hibernate-envers'
+	implementation 'org.hibernate.orm:hibernate-envers'
 	implementation 'io.jsonwebtoken:jjwt:0.9.1'
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
-	implementation 'io.sentry:sentry-spring-boot-starter:6.4.1'
-	implementation 'io.sentry:sentry-logback:6.4.1'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
+	implementation 'io.sentry:sentry-spring-boot-starter-jakarta:8.8.0'
+	implementation 'io.sentry:sentry-logback:8.8.0'
 	implementation 'nl.martijndwars:web-push:5.1.1'
+	implementation 'org.bouncycastle:bcprov-jdk18on:1.80'
 
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -63,6 +66,7 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation 'com.h2database:h2:1.4.200'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
