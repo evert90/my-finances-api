@@ -1,21 +1,16 @@
 package br.com.erp.service;
 
-import br.com.erp.bean.user.AuthenticatedUser;
-import br.com.erp.bean.user.User;
+import br.com.erp.bean.user.UserInfo;
 import br.com.erp.bean.user.UserReadonly;
+import br.com.erp.client.IdpClient;
 import br.com.erp.converter.user.UserEntityToUserReadOnly;
-import br.com.erp.converter.user.UserReadOnlyToAuthenticatedUser;
-import br.com.erp.converter.user.UserToUserEntity;
 import br.com.erp.entity.UserEntity;
 import br.com.erp.repository.UserRepository;
-import br.com.erp.service.security.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static java.util.Optional.ofNullable;
+import static br.com.erp.bean.user.Role.ROLE_USER;
 
 @RequiredArgsConstructor
 @Service
@@ -25,48 +20,35 @@ public class UserService {
 
     private final UserEntityToUserReadOnly userEntityToUserReadOnly;
 
-    private final UserToUserEntity userToUserEntity;
+    private final IdpClient idpClient;
 
-    private final UserReadOnlyToAuthenticatedUser userReadOnlyToAuthenticatedUser;
-
-    private final PasswordEncoder passwordEncoder;
-
-    public AuthenticatedUser authenticate(User user) {
-        return ofNullable(user)
-                .map(User::email)
-                .map(repository::findByEmail)
-                .filter(entity -> passwordEncoder.matches(user.password(), entity.getPassword()))
-                .map(userEntityToUserReadOnly)
-                .map(userReadOnlyToAuthenticatedUser)
-                .orElseThrow(() -> new RuntimeException("Usuário e/ou senha inválidos"));
+    public UserReadonly getUser() {
+        return userEntityToUserReadOnly.apply(getUserEntity());
     }
 
-    public AuthenticatedUser saveAndAuthenticate(User user) {
-        return userReadOnlyToAuthenticatedUser.apply(save(user));
-    }
+    public UserEntity getUserEntity() {
+        var userInfo = idpClient.getUserInfo();
 
-    public AuthenticatedUser socialLoginAuthenticate(User user) {
-        return ofNullable(user)
-                .map(User::email)
-                .map(repository::findByEmail)
-                .map(userEntityToUserReadOnly)
-                .map(userReadOnlyToAuthenticatedUser)
-                .orElseGet(() -> userReadOnlyToAuthenticatedUser.apply(save(user)));
+        return repository.findByEmail(userInfo.email())
+                .orElseGet(() -> createAndSaveUser(userInfo));
     }
 
     public UserEntity getCurrentUser() {
-        var userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var userInfo = idpClient.getUserInfo();
         return repository
-                .findById(userDetails.getId())
+                .findByEmail(userInfo.email())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário inválido ou não encontrado"));
     }
 
-    private UserReadonly save(User user) {
-        return ofNullable(user)
-                .map(userToUserEntity)
-                .map(repository::save)
-                .map(userEntityToUserReadOnly)
-                .orElseThrow(() -> new RuntimeException("Erro ao salvar/retornar o usuário"));
+    private UserEntity createAndSaveUser(UserInfo userInfo) {
+        var user = UserEntity
+                .builder()
+                .name(userInfo.name())
+                .email(userInfo.email())
+                .role(ROLE_USER)
+                .build();
+
+        return repository.save(user);
     }
 
 }
