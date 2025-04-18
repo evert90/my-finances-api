@@ -14,7 +14,9 @@ COPY --from=build /app/build/libs/*.jar app.jar
 
 COPY sentry/sentry-opentelemetry-agent-8.8.0.jar /sentry/sentry-opentelemetry-agent.jar
 
-ENV SENTRY_PROPERTIES_FILE=sentry.properties
+ENV SENTRY_PROPERTIES_FILE sentry.properties
+
+ENV SENTRY_AUTO_INIT false
 
 EXPOSE 8080
 
