@@ -20,7 +20,7 @@ springdoc:
 # Actuator
 management:
   server:
-    port: 8083
+    port: 8088
   endpoints:
     web:
       exposure:
@@ -28,5 +28,7 @@ management:
 
 #MONITORING
 sentry:
-  exception-resolver-order: 0
+  exception-resolver-order: -2147483647
+  release: ${SOURCE_COMMIT:0.0.0}
   traces-sample-rate: 1.0
+  send-default-pii=true:
