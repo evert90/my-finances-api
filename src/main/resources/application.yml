@@ -31,4 +31,4 @@ sentry:
   exception-resolver-order: -2147483647
   release: ${SOURCE_COMMIT:0.0.0}
   traces-sample-rate: 1.0
-  send-default-pii=true:
+  send-default-pii: true
