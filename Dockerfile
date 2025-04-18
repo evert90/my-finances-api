@@ -14,6 +14,8 @@ COPY --from=build /app/build/libs/*.jar app.jar
 
 COPY sentry/sentry-opentelemetry-agent-8.8.0.jar /sentry/sentry-opentelemetry-agent.jar
 
+ENV SENTRY_PROPERTIES_FILE=sentry.properties
+
 EXPOSE 8080
 
 CMD ["java", "-Djava.security.egd=file:/dev/./urandom", "-javaagent:/sentry/sentry-opentelemetry-agent.jar", "-jar", "app.jar"]
