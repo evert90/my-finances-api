@@ -29,5 +29,4 @@ management:
 #MONITORING
 sentry:
   exception-resolver-order: 0
-  release: ${VERSION:0.0.0}
   traces-sample-rate: 1.0

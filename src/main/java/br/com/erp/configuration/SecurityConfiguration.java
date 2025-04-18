@@ -21,7 +21,7 @@ public class SecurityConfiguration {
         httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET, "/actuator/**", "/swagger-ui/**", "/v3/**", "/version/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/actuator/**", "/swagger/**", "/api/version/**").permitAll()
                         .anyRequest().authenticated()
                 ).oauth2ResourceServer(auth -> auth.jwt(
                         token -> token.jwtAuthenticationConverter(new JwtAuthConverter()))

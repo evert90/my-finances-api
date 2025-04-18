@@ -1,13 +1,6 @@
 #AUTH
 app:
   url: http://localhost:21200
-  auth:
-    jwtExpirationMs: 604800000
-    jwtSecret: testSecret
-    redirectUrl: fakeUrl/auth/login
-
-cors:
-  allowed-origins: http://localhost:3000
 
 #PUSH-NOTIFICATION
 vapid:
@@ -24,10 +17,3 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            clientId: fakeId
-            clientSecret: fakeSecret

@@ -4,9 +4,8 @@ package br.com.erp.service;
 import br.com.erp.bean.Version;
 import br.com.erp.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 @RequiredArgsConstructor
@@ -14,27 +13,23 @@ public class VersionService {
 
     public static final String NOT_FOUND_MESSAGE = "Versão não encontrada";
 
-    @Value("${HEROKU_BUILD_COMMIT:0.0.0}")
-    private String version;
-
-    @Value("${HEROKU_RELEASE_CREATED_AT:unknown}")
-    private String release;
+    private final GitProperties gitProperties;
 
     public Version getVersion() {
         return Version
                 .builder()
-                .gitVersion(version)
-                .dateTime(release)
+                .gitVersion(gitProperties.getCommitId())
+                .dateTime(gitProperties.getCommitTime())
                 .build();
     }
 
-    public Version getVersionByGitVersion(@PathVariable(value = "gitVersion") String gitVersion) {
+    public Version getVersionByGitVersion(String version) {
 
-        if(version.equals(gitVersion)) {
+        if(gitProperties.getCommitId().equals(version)) {
             return Version
                     .builder()
-                    .gitVersion(version)
-                    .dateTime(release)
+                    .gitVersion(gitProperties.getCommitId())
+                    .dateTime(gitProperties.getCommitTime())
                     .build();
         }
 
