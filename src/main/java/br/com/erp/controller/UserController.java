@@ -20,7 +20,7 @@ public class UserController {
 
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    UserReadonly getUser(@AuthenticationPrincipal Jwt jwt) {
+    UserReadonly getUser() {
         return userService.getUser();
     }
 
