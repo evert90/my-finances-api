@@ -3,11 +3,10 @@ package br.com.erp.client;
 import br.com.erp.bean.user.UserInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.AbstractOAuth2Token;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,14 +19,12 @@ public class IdpClient {
 
     private final RestTemplate restTemplate;
 
-    public UserInfo getUserInfo() {
-
+    @Cacheable("userInfo")
+    public UserInfo getUserInfo(String token) {
         String gatewayUrl = idpUrl + "/oauth2/userInfo";
 
-        var jwt = (AbstractOAuth2Token) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
         HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwt.getTokenValue());
+        headers.setBearerAuth(token);
 
         HttpEntity<Void> entity = new HttpEntity<>(headers);
 
