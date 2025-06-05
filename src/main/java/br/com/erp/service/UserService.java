@@ -7,7 +7,9 @@ import br.com.erp.converter.user.UserEntityToUserReadOnly;
 import br.com.erp.entity.UserEntity;
 import br.com.erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.core.AbstractOAuth2Token;
 import org.springframework.stereotype.Service;
 
 import static br.com.erp.bean.user.Role.ROLE_USER;
@@ -27,14 +29,14 @@ public class UserService {
     }
 
     public UserEntity getUserEntity() {
-        var userInfo = idpClient.getUserInfo();
+        var userInfo = idpClient.getUserInfo(getToken());
 
         return repository.findByEmail(userInfo.email())
                 .orElseGet(() -> createAndSaveUser(userInfo));
     }
 
     public UserEntity getCurrentUser() {
-        var userInfo = idpClient.getUserInfo();
+        var userInfo = idpClient.getUserInfo(getToken());
         return repository
                 .findByEmail(userInfo.email())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário inválido ou não encontrado"));
@@ -49,6 +51,11 @@ public class UserService {
                 .build();
 
         return repository.save(user);
+    }
+
+    private String getToken() {
+        var jwt = (AbstractOAuth2Token) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return jwt.getTokenValue();
     }
 
 }
