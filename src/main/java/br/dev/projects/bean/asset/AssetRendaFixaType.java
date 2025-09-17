@@ -4,5 +4,6 @@ public enum AssetRendaFixaType {
     CDB,
     LC,
     LCA,
-    LCI
+    LCI,
+    TESOURO_DIRETO
 }
